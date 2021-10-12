@@ -1,0 +1,22 @@
+{
+  "name": "@spaceproject/discord-sputils",
+  "version": "1.0.0",
+  "description": "a simple package",
+  "main": "index.js",
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GaryCraft/discord-spUtils.git"
+  },
+  "author": "GaryCraft",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GaryCraft/discord-spUtils/issues"
+  },
+  "homepage": "https://github.com/GaryCraft/discord-spUtils#readme"
+}
