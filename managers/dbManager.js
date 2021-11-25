@@ -1,5 +1,5 @@
 const { Collection } = require('discord.js');
-const {sleep} = require('../baseFunctions/util');
+const { sleep, validateConfig } = require('../baseFunctions/util');
 
 const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
 class spDatabase {

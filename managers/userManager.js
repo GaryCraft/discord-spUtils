@@ -1,12 +1,12 @@
 const { Collection } = require('discord.js');
-const {sleep} = require('../baseFunctions/util');
+const { sleep, validateConfig } = require('../baseFunctions/util');
 
 const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
 class spUserManager {
 	constructor(config, client) {
 		this.cache = new Object();
 		this.cache.data = new Collection();
-		
+
 		if(!validateConfig(config)) throw new Error('Invalid Config');
 		this.cache.modulecfg = config;
 		
