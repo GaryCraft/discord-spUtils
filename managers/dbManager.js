@@ -24,10 +24,12 @@ async function applyOptions(cache, results, options) {
 					}
 					break;
 				}
+				/*
 				case 'forceupdate':{
-					if (option['property'] == true)results = readdb(cache.modulecfg, table, query, options);
+					if (option['property'] == true)results = await readdb(cache.modulecfg, table, query, options);
 					break;
 				}
+				*/
 				default : {
 					console.log(`Unknown option type: ${option['type']}`);
 				}
@@ -46,6 +48,32 @@ class spDatabase {
 		
 		this.client = client ? client : null;
 		
+	}
+
+	forceQuery(table, query, options) {
+		return new Promise(async (resolve)=>{
+			if(typeof table !== 'string') throw new Error('Not a valid Table');
+			if(typeof query !== 'object') throw new Error('Not a valid Query object');
+			if(options){
+				if(typeof options !== 'object' && !options.length > 0) throw new Error('Not a valid Options array');
+			}
+			
+			let dbdata = null;
+
+			let queryres = null;
+			
+			
+			dbdata = await readdb(this.cache.modulecfg, table, query, options);
+			if(!dbdata) {
+				resolve(queryres);
+				return;
+			}
+			else{
+				queryres = dbdata;
+				this.cache.data.set(table, dbdata);
+				resolve(queryres);
+			}
+		});
 	}
 	query(table, query, options) {
 		return new Promise(async (resolve)=>{
@@ -79,9 +107,11 @@ class spDatabase {
 				if(tarr.length >= 1) queryres = tarr;
 
 				if(queryres) {
+					/*
 					if(options){
 						queryres = await applyOptions(this.cache, queryres, options);
 					}
+					*/
 					resolve(queryres);
 					return;
 				}
@@ -89,14 +119,11 @@ class spDatabase {
 					dbdata = await readdb(this.cache.modulecfg, table, query, options);
 
 					if(!dbdata) {
-						// console.log('Not found cache (not updated) nor DB'+queryres);
 						resolve(queryres);
 						return;
 					}
-					// console.log('Not found cache (not updated) but did in DB'+queryres);
 					const updated = cachedata.concat(dbdata);
 					this.cache.data.set(table, updated);
-					// console.log(queryres);
 				}
 
 

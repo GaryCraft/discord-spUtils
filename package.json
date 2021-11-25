@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/GaryCraft/discord-spUtils/issues"
   },
-  "homepage": "https://github.com/GaryCraft/discord-spUtils#readme"
+  "homepage": "https://github.com/GaryCraft/discord-spUtils#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  }
 }
