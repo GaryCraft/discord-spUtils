@@ -47,7 +47,9 @@ class spDatabase {
 		return new Promise(async (resolve)=>{
 			if(typeof table !== 'string') throw new Error('Not a valid Table');
 			if(typeof query !== 'object') throw new Error('Not a valid Query object');
-			if(options && typeof options !== 'object' && options.length > 0) throw new Error('Not a valid Options array');
+			if(options){
+				if(typeof options !== 'object' && options.length > 0) throw new Error('Not a valid Options array');
+			}
 			
 			const cachedata = this.cache.data.get(table);
 			let dbdata = null;
