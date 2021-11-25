@@ -14,7 +14,6 @@ function translateOption(option){
 }
 function readdb(modulecfg, table, statementsobj, optionsobj) {
 	return new Promise((resolve) => {
-		// console.log('MAKING QUERY TO DATABASE')
 		const con = mysql.createConnection({
 			host: modulecfg.host,
 			user: modulecfg.user,
@@ -23,6 +22,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 			supportBigNumbers: true,
 			bigNumberStrings: true,
 		});
+		if(modulecfg.verbose) console.log(`Making query to database in table ${table}`);
 		let optionsstatement = '';
 		if(optionsobj){
 			const optionsarr = [];
@@ -42,6 +42,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 		}
 		// console.log(statement)
 		const statement = statementarr.join(' && ');
+		if(modulecfg.verbose) console.log(`SELECT * FROM ${table} WHERE ${statement}${optionsstatement}`);
 		con.query(`SELECT * FROM ${table} WHERE ${statement}${optionsstatement}`,
 			(err, fields) => {
 				if (err) {
@@ -97,16 +98,6 @@ function insertdb(modulecfg, table, valuesobj) {
 		const valueskeys = Object.keys(valuesobj);
 		let keys = '';
 		let values = '';
-		/* for( let i = 0 ; i <= valueskeys.length ; i++ ){
-			const key = valueskeys[i];
-			if(i == 0) {
-				keys = keys + `${key}`;
-				values = values + `"${JSON.stringify(values[key])}"`;
-				continue;
-			}
-			keys = keys + `, ${key}`
-			values = values + `, "${JSON.stringify(values[key])}"`;
-		}*/
 
 		for (const key of valueskeys) {
 			const pad = typeof valuesobj[key] == 'object' ? '\'' : '';
@@ -159,7 +150,6 @@ function updatedb(modulecfg, table, key, value, statementsobj) {
 		statement = statement + ` && ${statementskeys[i]} = ${pad}${statementsobj[statementskeys[i]]}${pad}`;
 	}
 	const pad = typeof value == 'object' ? '\'' : '';
-	// console.log(value)
 	con.query(`UPDATE ${table} SET ${key} = ${pad}${JSON.stringify(value)}${pad} WHERE ${statement}`,
 		(err) => {
 			if (err) {
