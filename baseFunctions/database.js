@@ -26,7 +26,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 		let optionsstatement = '';
 		if(optionsobj){
 			const optionsarr = [];
-			for (const option in optionsobj) {
+			for (const option of optionsobj) {
 				optionsarr.push(translateOption(option));
 			}
 			optionsstatement = ` ${optionsarr.join(' ')}`;
