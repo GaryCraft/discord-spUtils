@@ -3,7 +3,7 @@ const { sleep, validateConfig } = require('../baseFunctions/util');
 
 const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
 
-async function applyOptions(results, options) {
+async function applyOptions(cache, results, options) {
 	return new Promise((resolve, reject) => {
 		
 		for(const option in options) {
@@ -22,6 +22,10 @@ async function applyOptions(results, options) {
 							return b[`${option['property']}`] - a[`${option['property']}`];
 						});
 					}
+					break;
+				}
+				case 'forceupdate':{
+					if (option['property'] == true)results = readdb(cache.modulecfg, table, query, options);
 					break;
 				}
 				default : {
@@ -48,14 +52,14 @@ class spDatabase {
 			if(typeof table !== 'string') throw new Error('Not a valid Table');
 			if(typeof query !== 'object') throw new Error('Not a valid Query object');
 			if(options){
-				if(typeof options !== 'object' && options.length > 0) throw new Error('Not a valid Options array');
+				if(typeof options !== 'object' && !options.length > 0) throw new Error('Not a valid Options array');
 			}
 			
 			const cachedata = this.cache.data.get(table);
 			let dbdata = null;
 
 			let queryres = null;
-			if(cachedata && !options) {
+			if(cachedata) {
 				const tarr = [];
 				for await(const obj of cachedata) {
 					const keys = Object.keys(query);
@@ -76,13 +80,13 @@ class spDatabase {
 
 				if(queryres) {
 					if(options){
-						queryres = await applyOptions(queryres, options);
+						queryres = await applyOptions(this.cache, queryres, options);
 					}
 					resolve(queryres);
 					return;
 				}
 				else {
-					dbdata = await readdb(this.cache.modulecfg, table, query);
+					dbdata = await readdb(this.cache.modulecfg, table, query, options);
 
 					if(!dbdata) {
 						// console.log('Not found cache (not updated) nor DB'+queryres);
