@@ -4,11 +4,14 @@ const {sleep} = require('../baseFunctions/util');
 const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
 class spUserManager {
 	constructor(config, client) {
-		if(!validateConfig(config)) throw new Error('Invalid Config');
-		this.cache.modulecfg = config;
-		this.client = client ? client : null;
 		this.cache = new Object();
 		this.cache.data = new Collection();
+		
+		if(!validateConfig(config)) throw new Error('Invalid Config');
+		this.cache.modulecfg = config;
+		
+		this.client = client ? client : null;
+		
 	}
 	getData(userid, configobj) {
 		return new Promise(async (resolve) => {

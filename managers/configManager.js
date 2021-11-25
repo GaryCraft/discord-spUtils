@@ -4,11 +4,14 @@ const { sleep, validateConfig } = require('../baseFunctions/util');
 const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
 class spConfigManager {
 	constructor(config, client) {
-		if(!validateConfig(config)) throw new Error('Invalid Config');
-		this.cache.modulecfg = config;
-		this.client = client ? client : null;
 		this.cache = new Object();
 		this.cache.configs = new Collection();
+		
+		if(!validateConfig(config)) throw new Error('Invalid Config');
+		this.cache.modulecfg = config;
+		
+		this.client = client ? client : null;
+		
 	}
 
 	getConfig(guildid, configobj) {
