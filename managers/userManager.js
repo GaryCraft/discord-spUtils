@@ -1,7 +1,7 @@
 const { Collection } = require('discord.js');
 const {sleep} = require('../baseFunctions/util');
 
-const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/db');
+const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
 class spUserManager {
 	constructor(config, client) {
 		if(!validateConfig(config)) throw new Error('Invalid Config');
