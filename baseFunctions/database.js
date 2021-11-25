@@ -54,7 +54,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 					);
 				}
 				let Aresult = [];
-				if(modulecfg.verbose) console.log(`Query results ${fields}`);
+				if(modulecfg.verbose) console.log(`Query results ${JSON.stringify(fields)}`);
 				if (fields[0]) {
 
 
@@ -120,7 +120,7 @@ function insertdb(modulecfg, table, valuesobj) {
 					);
 				}
 				setTimeout(function() {con.end();}, 500);
-				console.log('DB data Inserted || ' + `${keys} // ${values}`);
+				if (modulecfg.verbose) console.log('DB data Inserted || ' + `${keys} // ${values}`);
 				resolve(true);
 			});
 
