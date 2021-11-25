@@ -62,7 +62,6 @@ class spDatabase {
 
 			let queryres = null;
 			
-			
 			dbdata = await readdb(this.cache.modulecfg, table, query, options);
 			if(!dbdata) {
 				resolve(queryres);
@@ -155,7 +154,7 @@ class spDatabase {
 
 		let currdata = null;
 		const currcache = this.cache.data.get(table);
-		if(!query.new == true)currdata = await this.query(table, query);
+		if(!query.new == true)currdata = await this.forceQuery(table, query);
 
 		if(!currdata || query.new == true) {
 			if(currcache) {

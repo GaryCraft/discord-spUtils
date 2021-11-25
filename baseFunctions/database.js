@@ -38,6 +38,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 
 
 		for(let i = 0 ; i < statementskeys.length ; i++) {
+			if([statementskeys[i]] == 'new') continue;
 			statementarr.push(`${statementskeys[i]} ` + (statementsobj[statementskeys[i]] === '*' ? '' : `= '${(statementsobj[statementskeys[i]])}' `));
 		}
 		// console.log(statement)
