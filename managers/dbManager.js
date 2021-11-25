@@ -256,4 +256,4 @@ class spDatabase {
 	}
 }
 
-export default spDatabase;
+module.exports =  spDatabase;

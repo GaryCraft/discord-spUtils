@@ -109,4 +109,4 @@ class spUserManager {
 	}
 }
 
-export default spUserManager;
+module.exports = spUserManager;

@@ -108,4 +108,4 @@ class spConfigManager {
 	}
 }
 
-export default spConfigManager;
+module.exports = spConfigManager;
