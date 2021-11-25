@@ -1,6 +1,6 @@
 {
   "name": "ds-sputils",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "a simple package",
   "main": "index.js",
   "scripts": {
