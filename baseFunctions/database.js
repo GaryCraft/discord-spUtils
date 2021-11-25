@@ -53,9 +53,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 					);
 				}
 				let Aresult = [];
-
-
-				// console.log(fields)
+				if(modulecfg.verbose) console.log(`Query results ${fields}`);
 				if (fields[0]) {
 
 
@@ -94,7 +92,7 @@ function insertdb(modulecfg, table, valuesobj) {
 			supportBigNumbers: true,
 			bigNumberStrings: true,
 		});
-
+		if(modulecfg.verbose) console.log(`Making insert to database in table ${table}`);
 		const valueskeys = Object.keys(valuesobj);
 		let keys = '';
 		let values = '';
@@ -109,7 +107,7 @@ function insertdb(modulecfg, table, valuesobj) {
 			keys = keys + `, ${key}`;
 			values = values + `, ${pad}${JSON.stringify(valuesobj[key])}${pad}`;
 		}
-
+		if(modulecfg.verbose) console.log(`INSERT INTO ${table} (${keys}) VALUES (${values})`);
 		con.query(`INSERT INTO ${table} (${keys}) VALUES (${values})`,
 			(err) => {
 				if (err) {
@@ -137,7 +135,7 @@ function updatedb(modulecfg, table, key, value, statementsobj) {
 		supportBigNumbers: true,
 		bigNumberStrings: true,
 	});
-
+	if(modulecfg.verbose) console.log(`Making update to database in table ${table}`);
 	let statement = '';
 	const statementskeys = Object.keys(statementsobj);
 	for(let i = 0 ; i < statementskeys.length ; i++) {
@@ -150,6 +148,7 @@ function updatedb(modulecfg, table, key, value, statementsobj) {
 		statement = statement + ` && ${statementskeys[i]} = ${pad}${statementsobj[statementskeys[i]]}${pad}`;
 	}
 	const pad = typeof value == 'object' ? '\'' : '';
+	if(modulecfg.verbose) console.log(`UPDATE ${table} SET ${key} = ${pad}${JSON.stringify(value)}${pad} WHERE ${statement}`);
 	con.query(`UPDATE ${table} SET ${key} = ${pad}${JSON.stringify(value)}${pad} WHERE ${statement}`,
 		(err) => {
 			if (err) {
@@ -189,6 +188,7 @@ function deletedb(modulecfg, table, statementsobj) {
 		}
 		// console.log(statement)
 		const statement = statementarr.join(' && ');
+		if(modulecfg.verbose) console.log(`DELETE FROM ${table} WHERE ${statement}`);
 		con.query(`DELETE FROM ${table} WHERE ${statement}`,
 			(err) => {
 				if (err) {
