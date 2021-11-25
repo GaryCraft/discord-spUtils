@@ -1,38 +1,41 @@
+/* eslint-disable no-async-promise-executor */
 const { Collection } = require('discord.js');
-const { sleep, validateConfig } = require('../baseFunctions/util');
+const { sleep, validateConfig, cleanupDuplicates } = require('../baseFunctions/util');
 
 const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
 
+// eslint-disable-next-line no-unused-vars
 async function applyOptions(cache, results, options) {
-	return new Promise((resolve, reject) => {
-		
+	return new Promise((resolve) => {
+
 		for(const option in options) {
-			if(!option['property']){
+			if(!option['property']) {
 				console.log(`[${option['type']}]`);
 				continue;
 			}
 			switch(option['type']) {
-				case 'order' : {
-					if(option['args'] == 'asc') {
-						results.sort(function(a, b) {
-							return a[`${option['property']}`] - b[`${option['property']}`];
-						});
-					} else if(option['args'] == 'desc') {
-						results.sort(function(a, b) {
-							return b[`${option['property']}`] - a[`${option['property']}`];
-						});
-					}
-					break;
+			case 'order' : {
+				if(option['args'] == 'asc') {
+					results.sort(function(a, b) {
+						return a[`${option['property']}`] - b[`${option['property']}`];
+					});
 				}
-				/*
+				else if(option['args'] == 'desc') {
+					results.sort(function(a, b) {
+						return b[`${option['property']}`] - a[`${option['property']}`];
+					});
+				}
+				break;
+			}
+			/*
 				case 'forceupdate':{
 					if (option['property'] == true)results = await readdb(cache.modulecfg, table, query, options);
 					break;
 				}
 				*/
-				default : {
-					console.log(`Unknown option type: ${option['type']}`);
-				}
+			default : {
+				console.log(`Unknown option type: ${option['type']}`);
+			}
 			}
 		}
 		resolve(results);
@@ -42,26 +45,26 @@ class spDatabase {
 	constructor(config, client) {
 		this.cache = new Object();
 		this.cache.data = new Collection();
-		
+
 		if(!validateConfig(config)) throw new Error('Invalid Config');
 		this.cache.modulecfg = config;
-		
+
 		this.client = client ? client : null;
-		
+
 	}
 
 	forceQuery(table, query, options) {
 		return new Promise(async (resolve)=>{
 			if(typeof table !== 'string') throw new Error('Not a valid Table');
 			if(typeof query !== 'object') throw new Error('Not a valid Query object');
-			if(options){
+			if(options) {
 				if(typeof options !== 'object' && !options.length > 0) throw new Error('Not a valid Options array');
 			}
-			
+
 			let dbdata = null;
 
 			let queryres = null;
-			
+
 			dbdata = await readdb(this.cache.modulecfg, table, query, options);
 			if(!dbdata) {
 				resolve(queryres);
@@ -69,7 +72,7 @@ class spDatabase {
 			}
 			else{
 				queryres = dbdata;
-				this.cache.data.set(table, dbdata);
+				this.cache.data.set(table, cleanupDuplicates(dbdata));
 				resolve(queryres);
 			}
 		});
@@ -78,10 +81,10 @@ class spDatabase {
 		return new Promise(async (resolve)=>{
 			if(typeof table !== 'string') throw new Error('Not a valid Table');
 			if(typeof query !== 'object') throw new Error('Not a valid Query object');
-			if(options){
+			if(options) {
 				if(typeof options !== 'object' && !options.length > 0) throw new Error('Not a valid Options array');
 			}
-			
+
 			const cachedata = this.cache.data.get(table);
 			let dbdata = null;
 
@@ -122,7 +125,7 @@ class spDatabase {
 						return;
 					}
 					const updated = cachedata.concat(dbdata);
-					this.cache.data.set(table, updated);
+					this.cache.data.set(table, cleanupDuplicates(updated));
 				}
 
 
@@ -136,7 +139,7 @@ class spDatabase {
 				}
 				else{
 					queryres = dbdata;
-					this.cache.data.set(table, dbdata);
+					this.cache.data.set(table, cleanupDuplicates(dbdata));
 					// console.log('Not found cache but did in DB'+queryres);
 					resolve(queryres);
 				}
@@ -158,7 +161,7 @@ class spDatabase {
 
 		if(!currdata || query.new == true) {
 			if(currcache) {
-				this.cache.data.set(table, currcache.concat([newvalues]));
+				this.cache.data.set(table, cleanupDuplicates(currcache.concat([newvalues])));
 			}
 			else{
 				this.cache.data.set(table, [newvalues]);
@@ -210,7 +213,7 @@ class spDatabase {
 			}
 			if(mod.length >= 1) {
 				const joined = nomod.concat(mod);
-				this.cache.data.set(table, joined);
+				this.cache.data.set(table, cleanupDuplicates(joined));
 
 				for await(const obj of mod) {
 					for await(const key of Object.keys(obj)) {
@@ -235,7 +238,7 @@ class spDatabase {
 
 		if(!currdata || query.new == true) {
 			if(currcache) {
-				this.cache.data.set(table, currcache.concat([newvalues]));
+				this.cache.data.set(table, cleanupDuplicates(currcache.concat([newvalues])));
 			}
 			else{
 				this.cache.data.set(table, [newvalues]);
@@ -286,7 +289,7 @@ class spDatabase {
 			}
 			if(mod.length >= 1) {
 				const joined = nomod.concat(mod);
-				this.cache.data.set(table, joined);
+				this.cache.data.set(table, cleanupDuplicates(joined));
 			}
 
 
@@ -318,10 +321,10 @@ class spDatabase {
 			}
 		}
 
-		this.cache.data.set(table, nomatch.length >= 1 ? nomatch : null);
+		this.cache.data.set(table, nomatch.length >= 1 ? cleanupDuplicates(nomatch) : null);
 		await deletedb(this.cache.modulecfg, table, query);
 
 	}
 }
 
-module.exports =  spDatabase;
+module.exports = spDatabase;

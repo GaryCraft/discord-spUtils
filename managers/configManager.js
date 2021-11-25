@@ -1,17 +1,18 @@
+/* eslint-disable no-async-promise-executor */
 const { Collection } = require('discord.js');
 const { sleep, validateConfig } = require('../baseFunctions/util');
 
-const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
+const { readdb, insertdb, updatedb } = require('../baseFunctions/database');
 class spConfigManager {
 	constructor(config, client) {
 		this.cache = new Object();
 		this.cache.configs = new Collection();
-		
+
 		if(!validateConfig(config)) throw new Error('Invalid Config');
 		this.cache.modulecfg = config;
-		
+
 		this.client = client ? client : null;
-		
+
 	}
 
 	getConfig(guildid, configobj) {
@@ -19,7 +20,7 @@ class spConfigManager {
 			if(typeof configobj !== 'object' && configobj != undefined) throw new Error('Not a Config Object');
 			if(typeof guildid !== 'string' || guildid.length !== 18) throw new Error('Not a Valid GuildID Snowflake string');
 
-			if(this.client){
+			if(this.client) {
 				const guild = await this.client.guilds.fetch(guildid);
 				if(!guild) throw new Error('Unknown Guild');
 			}
@@ -62,7 +63,7 @@ class spConfigManager {
 		if(typeof configobj !== 'object') throw new Error('Not a Config Object');
 		if(typeof guildid !== 'string' || guildid.length !== 18) throw new Error('Invalid Snowflake');
 
-		if(this.client){
+		if(this.client) {
 			const guild = await this.client.guilds.fetch(guildid);
 			if(!guild) throw new Error('Unknown Guild');
 		}

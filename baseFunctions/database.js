@@ -1,14 +1,13 @@
 const mysql = require('mysql');
-function translateOption(option){
-	switch (option['type']){
-		case 'order':{
-			return `ORDER BY ${option['property']} ${option['args']}`;
-			break;
-		}
-		default:{
-			console.log(`Unknown Option ${option['type']}`);
-			return '';
-		}
+function translateOption(option) {
+	switch (option['type']) {
+	case 'order': {
+		return `ORDER BY ${option['property']} ${option['args']}`;
+	}
+	default: {
+		console.log(`Unknown Option ${option['type']}`);
+		return '';
+	}
 	}
 
 }
@@ -24,7 +23,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 		});
 		if(modulecfg.verbose) console.log(`Making query to database in table ${table}`);
 		let optionsstatement = '';
-		if(optionsobj){
+		if(optionsobj) {
 			const optionsarr = [];
 			for (const option of optionsobj) {
 				optionsarr.push(translateOption(option));
@@ -38,7 +37,7 @@ function readdb(modulecfg, table, statementsobj, optionsobj) {
 
 
 		for(let i = 0 ; i < statementskeys.length ; i++) {
-			if([statementskeys[i]] == 'new') continue;
+			if(statementskeys[i] == 'new') continue;
 			statementarr.push(`${statementskeys[i]} ` + (statementsobj[statementskeys[i]] === '*' ? '' : `= '${(statementsobj[statementskeys[i]])}' `));
 		}
 		// console.log(statement)
