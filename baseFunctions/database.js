@@ -1,5 +1,18 @@
 const mysql = require('mysql');
-function readdb(modulecfg, table, statementsobj) {
+function translateOption(option){
+	switch (option['type']){
+		case 'order':{
+			return `ORDER BY ${option['property']} ${option['args']}`;
+			break;
+		}
+		default:{
+			console.log(`Unknown Option ${option['type']}`);
+			return '';
+		}
+	}
+
+}
+function readdb(modulecfg, table, statementsobj, optionsobj) {
 	return new Promise((resolve) => {
 		// console.log('MAKING QUERY TO DATABASE')
 		const con = mysql.createConnection({
@@ -10,7 +23,14 @@ function readdb(modulecfg, table, statementsobj) {
 			supportBigNumbers: true,
 			bigNumberStrings: true,
 		});
-
+		let optionsstatement = '';
+		if(optionsobj){
+			const optionsarr = [];
+			for (const option in optionsobj) {
+				optionsarr.push(translateOption(option));
+			}
+			optionsstatement = ` ${optionsarr.join(' ')}`;
+		}
 
 		const statementskeys = Object.keys(statementsobj);
 
@@ -22,7 +42,7 @@ function readdb(modulecfg, table, statementsobj) {
 		}
 		// console.log(statement)
 		const statement = statementarr.join(' && ');
-		con.query(`SELECT * FROM ${table} WHERE ${statement}`,
+		con.query(`SELECT * FROM ${table} WHERE ${statement}${optionsstatement}`,
 			(err, fields) => {
 				if (err) {
 					console.log(err);

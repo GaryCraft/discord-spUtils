@@ -2,6 +2,36 @@ const { Collection } = require('discord.js');
 const { sleep, validateConfig } = require('../baseFunctions/util');
 
 const { readdb, insertdb, updatedb, deletedb } = require('../baseFunctions/database');
+
+async function applyOptions(results, options) {
+	return new Promise((resolve, reject) => {
+		
+		for(const option in options) {
+			if(!option['property']){
+				console.log(`[${option['type']}]`);
+				continue;
+			}
+			switch(option['type']) {
+				case 'order' : {
+					if(option['args'] == 'asc') {
+						results.sort(function(a, b) {
+							return a[`${option['property']}`] - b[`${option['property']}`];
+						});
+					} else if(option['args'] == 'desc') {
+						results.sort(function(a, b) {
+							return b[`${option['property']}`] - a[`${option['property']}`];
+						});
+					}
+					break;
+				}
+				default : {
+					console.log(`Unknown option type: ${option['type']}`);
+				}
+			}
+		}
+		resolve(results);
+	});
+}
 class spDatabase {
 	constructor(config, client) {
 		this.cache = new Object();
@@ -13,16 +43,17 @@ class spDatabase {
 		this.client = client ? client : null;
 		
 	}
-	query(table, query) {
+	query(table, query, options) {
 		return new Promise(async (resolve)=>{
 			if(typeof table !== 'string') throw new Error('Not a valid Table');
 			if(typeof query !== 'object') throw new Error('Not a valid Query object');
-
+			if(options && typeof options !== 'array') throw new Error('Not a valid Options array');
+			
 			const cachedata = this.cache.data.get(table);
 			let dbdata = null;
 
 			let queryres = null;
-			if(cachedata) {
+			if(cachedata && !options) {
 				const tarr = [];
 				for await(const obj of cachedata) {
 					const keys = Object.keys(query);
@@ -42,7 +73,9 @@ class spDatabase {
 				if(tarr.length >= 1) queryres = tarr;
 
 				if(queryres) {
-					// console.log('Found in Cache'+JSON.stringify(queryres));
+					if(options){
+						queryres = await applyOptions(queryres, options);
+					}
 					resolve(queryres);
 					return;
 				}
@@ -63,7 +96,7 @@ class spDatabase {
 
 			}
 			else{
-				dbdata = await readdb(this.cache.modulecfg, table, query);
+				dbdata = await readdb(this.cache.modulecfg, table, query, options);
 				if(!dbdata) {
 					// console.log('Not found In cache nor DB'+queryres);
 					resolve(queryres);
