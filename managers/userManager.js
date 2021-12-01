@@ -103,6 +103,7 @@ class spUserManager {
 
 			this.cache.data.set(userid, newconfig);
 			for await(const key of Object.keys(newconfig)) {
+				if(newconfig[key] === userid) continue;
 				updatedb(this.cache.modulecfg, 'userdata', key, newconfig[key], { userid:userid });
 				sleep(2000);
 			}

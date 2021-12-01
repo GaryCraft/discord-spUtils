@@ -104,6 +104,7 @@ class spConfigManager {
 			this.cache.configs.set(guildid, newconfig);
 
 			for await(const key of Object.keys(newconfig)) {
+				if(newconfig[key] === guildid) continue;
 				updatedb(this.cache.modulecfg, 'serverconfigs', key, newconfig[key], { serverid:guildid });
 				sleep(2000);
 			}
