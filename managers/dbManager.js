@@ -217,6 +217,7 @@ class spDatabase {
 
 				for await(const obj of mod) {
 					for await(const key of Object.keys(obj)) {
+						if(obj[key] === query[key]) continue;
 						updatedb(this.cache.modulecfg, table, key, obj[key], query);
 						sleep(1000);
 					}
